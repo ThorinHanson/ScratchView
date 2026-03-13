@@ -34,8 +34,8 @@ ext {
     targetSdkVersion = 34
     compileSdkVersion = 34
     buildToolsVersion = '34.0.0'
-    versionCode = 12
-    versionName = '1.2'
+    versionCode = 13
+    versionName = '1.2.1'
 
     appcompatVersion = '1.1.0-alpha02'
     cardviewVersion = '1.0.0'

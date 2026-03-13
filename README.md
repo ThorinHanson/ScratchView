@@ -101,16 +101,29 @@ scratchTextView.setRevealListener(new ScratchTextView.IRevealListener() {
 Adding to your project
 ------------------------
 
-- Add the following configuration in your build.gradle file.
+Add the JitPack repository and the dependency.
+
+**This fork (ThorinHanson/ScratchView):**
 
 ```gradle
 repositories {
-    jcenter()
     maven { url "https://jitpack.io" }
 }
 
 dependencies {
-    compile 'com.github.cooltechworks:ScratchView:v1.1'
+    implementation 'com.github.ThorinHanson:ScratchView:1.2.1'
+}
+```
+
+**Original (cooltechworks/ScratchView):**
+
+```gradle
+repositories {
+    maven { url "https://jitpack.io" }
+}
+
+dependencies {
+    implementation 'com.github.cooltechworks:ScratchView:v1.1'
 }
 ```
 

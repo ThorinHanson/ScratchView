@@ -18,6 +18,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    publishing {
+        singleVariant('release')
+    }
 }
 
 dependencies {
@@ -26,13 +29,13 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$rootProject.appcompatVersion"
 }
 
-publishing {
-    publications {
-        release(MavenPublication) {
-            groupId = project.findProperty('group') ?: 'com.github.ThorinHanson'
-            artifactId = 'ScratchView'
-            version = project.findProperty('version') ?: rootProject.ext.versionName
-            afterEvaluate {
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                groupId = project.findProperty('group') ?: 'com.github.ThorinHanson'
+                artifactId = 'ScratchView'
+                version = project.findProperty('version') ?: rootProject.ext.versionName
                 from components.release
             }
         }
