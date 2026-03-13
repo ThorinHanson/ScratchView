@@ -43,7 +43,7 @@
                     android:layout_height="200dp"
                     android:layout_gravity="center"
                     android:layout_marginTop="20dp"
-                    app:customScrach="@drawable/temp_img"
+                    app:customScratch="@drawable/temp_img"
                     android:background="@android:color/white"
                     android:src="@drawable/img_sample2">
 

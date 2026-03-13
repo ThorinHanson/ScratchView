@@ -41,7 +41,7 @@ import androidx.core.content.ContextCompat;
 import com.cooltechworks.utils.BitmapUtils;
 
 /**
- * Scratch card ImageView. Optional custom overlay via app:customScrach (PR #4).
+ * Scratch card ImageView. Optional custom overlay via app:customScratch (PR #4).
  */
 public class ScratchImageView extends AppCompatImageView {
 
@@ -67,8 +67,8 @@ public class ScratchImageView extends AppCompatImageView {
     private float mRevealPercent;
     private int mThreadCount = 0;
 
-    /** Optional custom scratch overlay (e.g. app:customScrach). */
-    private Drawable mCustomScrachView;
+    /** Optional custom scratch overlay (e.g. app:customScratch). */
+    private Drawable mCustomScratchView;
 
     public ScratchImageView(Context context) {
         super(context);
@@ -77,21 +77,21 @@ public class ScratchImageView extends AppCompatImageView {
 
     public ScratchImageView(Context context, AttributeSet set) {
         super(context, set);
-        loadCustomScrach(context, set, 0);
+        loadCustomScratch(context, set, 0);
         init();
     }
 
     public ScratchImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        loadCustomScrach(context, attrs, defStyleAttr);
+        loadCustomScratch(context, attrs, defStyleAttr);
         init();
     }
 
-    private void loadCustomScrach(Context context, AttributeSet attrs, int defStyleAttr) {
+    private void loadCustomScratch(Context context, AttributeSet attrs, int defStyleAttr) {
         if (attrs == null) return;
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ScratchImageView, defStyleAttr, 0);
         try {
-            mCustomScrachView = a.getDrawable(R.styleable.ScratchImageView_customScrach);
+            mCustomScratchView = a.getDrawable(R.styleable.ScratchImageView_customScratch);
         } finally {
             a.recycle();
         }
@@ -116,8 +116,8 @@ public class ScratchImageView extends AppCompatImageView {
         mBitmapPaint = new Paint(Paint.DITHER_FLAG);
 
         Bitmap scratchBitmap;
-        if (mCustomScrachView != null) {
-            scratchBitmap = drawableToBitmap(mCustomScrachView);
+        if (mCustomScratchView != null) {
+            scratchBitmap = drawableToBitmap(mCustomScratchView);
             if (scratchBitmap == null) {
                 scratchBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_scratch_pattern);
             }
