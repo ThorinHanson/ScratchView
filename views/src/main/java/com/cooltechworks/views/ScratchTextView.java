@@ -1,4 +1,4 @@
-/**
+/*
  *
  * Copyright 2016 Harish Sridharan
 
@@ -30,21 +30,25 @@ import android.graphics.Rect;
 import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
-import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
-import android.widget.TextView;
+import androidx.appcompat.widget.AppCompatTextView;
+
+import com.cooltechworks.utils.BitmapUtils;
+
+import androidx.core.content.ContextCompat;
 
 /**
  * Created by Harish on 25/03/16.
  */
-public class ScratchTextView extends TextView {
+public class ScratchTextView extends AppCompatTextView {
 
 
     public interface IRevealListener {
         public void onRevealed(ScratchTextView tv);
+        public void onRevealPercentChangedListener(ScratchTextView stv, float percent);
     }
 
     public static final float STROKE_WIDTH = 12f;
@@ -93,9 +97,21 @@ public class ScratchTextView extends TextView {
     private BitmapDrawable mDrawable;
 
 
+    /**
+     * Listener object callback reference to send back the callback when the text has been revealed.
+     */
     private IRevealListener mRevealListener;
 
-    private boolean mIsRevealed = false;
+    /**
+     * Reveal percent value.
+     */
+    private float mRevealPercent;
+
+    /**
+     * Thread Count
+     */
+    private int mThreadCount = 0;
+
 
 
     public ScratchTextView(Context context) {
@@ -230,22 +246,6 @@ public class ScratchTextView extends TextView {
         int right = bounds[2];
         int bottom = bounds[3];
 
-//        int width = right - left;
-//        int height = bottom - top;
-//        int centerX = left + width / 2;
-//        int centerY = top + height / 2;
-//
-////        // just to clear more space multiplying by 1.5
-////        int newWidth = (int) (width * 1.6f);
-////        int newHeight = (int) (height * 1.6f);
-////
-////
-//
-//        left = centerX - width / 2;
-//        top = centerY - height / 2;
-//        right = left + width;
-//        bottom = top + height;
-
         Paint paint = new Paint();
         paint.setXfermode(new PorterDuffXfermode(
                 PorterDuff.Mode.CLEAR));
@@ -290,7 +290,7 @@ public class ScratchTextView extends TextView {
     }
 
     public boolean isRevealed() {
-        return mIsRevealed;
+        return mRevealPercent == 1;
     }
 
     private void checkRevealed() {
@@ -304,30 +304,47 @@ public class ScratchTextView extends TextView {
             int height = bounds[3] - top;
 
 
-            new AsyncTask<Integer,Void,Boolean>() {
+            // Do not create multiple calls to compare.
+            if(mThreadCount > 1) {
+                return;
+            }
+
+            mThreadCount++;
+
+            new AsyncTask<Integer, Void, Float>() {
 
                 @Override
-                protected Boolean doInBackground(Integer... params) {
+                protected Float doInBackground(Integer... params) {
 
-                    int left = params[0];
-                    int top = params[1];
-                    int width = params[2];
-                    int height = params[3];
+                    try {
+                        int left = params[0];
+                        int top = params[1];
+                        int width = params[2];
+                        int height = params[3];
 
-                    Bitmap croppedBitmap = Bitmap.createBitmap(mScratchBitmap, left, top, width, height );
-                    Bitmap emptyBitmap = Bitmap.createBitmap(croppedBitmap.getWidth(), croppedBitmap.getHeight(), croppedBitmap.getConfig());
+                        Bitmap croppedBitmap = Bitmap.createBitmap(mScratchBitmap, left, top, width, height);
 
-                    return(emptyBitmap.sameAs(croppedBitmap));
+                        return BitmapUtils.getTransparentPixelPercent(croppedBitmap);
+                    } finally {
+                        mThreadCount--;
+
+                    }
                 }
 
-                public void onPostExecute(Boolean hasRevealed) {
+                public void onPostExecute(Float percentRevealed) {
 
-                    if( ! mIsRevealed) {
-                        // still not revealed.
+                    // check if not revealed before.
+                    if( ! isRevealed()) {
 
-                        mIsRevealed = hasRevealed;
+                        float oldValue = mRevealPercent;
+                        mRevealPercent = percentRevealed;
 
-                        if( mIsRevealed) {
+                        if(oldValue != percentRevealed) {
+                            mRevealListener.onRevealPercentChangedListener(ScratchTextView.this, percentRevealed);
+                        }
+
+                        // if now revealed.
+                        if( isRevealed()) {
                             mRevealListener.onRevealed(ScratchTextView.this);
                         }
                     }
